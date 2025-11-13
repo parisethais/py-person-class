@@ -13,26 +13,19 @@ class Person:
 def create_person_list(people: List[Dict[str, Any]]) -> List[Person]:
     Person.people = {}
 
-    person_list: List[Person] = []
+    person_list: List[Person] = [
+        Person(name=data["name"], age=data["age"]) for data in people
+    ]
 
     for data in people:
-        person = Person(name=data["name"], age=data["age"])
-        person_list.append(person)
+        person = Person.people[data["name"]]
 
-    for data in people:
-        name = data["name"]
-        person = Person.people[name]
+        spouse_name = data.get("wife")
+        if spouse_name is not None:
+            setattr(person, "wife", Person.people[spouse_name])
 
-        if "wife" in data:
-            spouse_name = data["wife"]
-            if spouse_name is not None:
-                spouse = Person.people[spouse_name]
-                setattr(person, "wife", spouse)
-
-        if "husband" in data:
-            spouse_name = data["husband"]
-            if spouse_name is not None:
-                spouse = Person.people[spouse_name]
-                setattr(person, "husband", spouse)
+        spouse_name = data.get("husband")
+        if spouse_name is not None:
+            setattr(person, "husband", Person.people[spouse_name])
 
     return person_list
